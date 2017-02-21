@@ -38,7 +38,7 @@ elsif git.lines_of_code > 50 && issue_has_tiny_label
   remove_label_from_issue!(repo, pr_number, 'tiny')
 end
 
-# create reviewed/needs review
+# create reviewed/please review
 unless repo_has_label?(repo, 'reviewed')
   add_label_to_repo!(repo, 'reviewed', '0e8a16')
 end
@@ -47,9 +47,9 @@ unless repo_has_label?(repo, 'please review')
   add_label_to_repo!(repo, 'please review', 'fbca04')
 end
 
-# add/remove needs review
-if !issue_has_label?(repo, pr_number, 'reviewed') && !issue_has_label?(repo, pr_number, 'needs review')
-  add_labels_to_issue!(repo, pr_number, ['needs review'])
+# add/remove please review
+if !issue_has_label?(repo, pr_number, 'reviewed') && !issue_has_label?(repo, pr_number, 'please review')
+  add_labels_to_issue!(repo, pr_number, ['please review'])
 end
 
 # WARNINGS
