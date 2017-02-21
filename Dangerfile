@@ -57,6 +57,8 @@ end
 warn('PR is classed as Work in Progress') if github.pr_title.include? 'WIP'
 # warn when there is a big PR :metal:
 warn('Big PR') if git.lines_of_code > 666
+# warn when there is no tracker story tagged for this PR
+warn('Please provide a linked tracker story for this PR in the description') unless github.pr_body.match(/\[.*#\d*\]\(\D*(pivotaltracker).*\)/)
 
 # GENERIC MESSAGING
 message('Nice, more deletions than insertions :red_circle:') if git.deletions > git.insertions
