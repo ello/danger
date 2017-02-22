@@ -54,11 +54,11 @@ end
 
 # WARNINGS
 # make it more obvious that a PR is a work in progress and shouldn't be merged yet
-warn('PR is classed as Work in Progress') if github.pr_title.include? 'WIP'
+warn('PR is classed as Work in Progress', sticky: false) if github.pr_title.include? 'WIP'
 # warn when there is a big PR :metal:
-warn('Big PR') if git.lines_of_code > 666
+warn('Big PR', sticky: false) if git.lines_of_code > 666
 # warn when there is no tracker story tagged for this PR
-warn('Please provide a linked tracker story for this PR in the description') unless github.pr_body.match(/\[.*#\d*\]\(\D*(pivotaltracker).*\)/)
+warn('Please provide a linked tracker story for this PR in the description', sticky: false) unless github.pr_body.match(/\[.*#\d*\]\(\D*(pivotaltracker).*\)/)
 
 # GENERIC MESSAGING
-message('Nice, more deletions than insertions :red_circle:') if git.deletions > git.insertions
+message('Nice, more deletions than insertions :red_circle:', sticky: false) if git.deletions > git.insertions
