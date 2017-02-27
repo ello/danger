@@ -29,7 +29,6 @@ end
 unless repo_has_label?(repo, 'tiny')
   add_label_to_repo!(repo, 'tiny', 'f7c6c7')
 end
-
 # add/remove tiny
 issue_has_tiny_label = issue_has_label?(repo, pr_number, 'tiny')
 if git.lines_of_code < 50 && !issue_has_tiny_label
@@ -39,22 +38,29 @@ elsif git.lines_of_code > 50 && issue_has_tiny_label
 end
 
 # create reviewed/please review
-unless repo_has_label?(repo, 'reviewed')
-  add_label_to_repo!(repo, 'reviewed', '0e8a16')
-end
-
 unless repo_has_label?(repo, 'please review')
   add_label_to_repo!(repo, 'please review', 'fbca04')
 end
-
+unless repo_has_label?(repo, 'reviewed')
+  add_label_to_repo!(repo, 'reviewed', '0e8a16')
+end
 # add/remove please review
 if !issue_has_label?(repo, pr_number, 'reviewed') && !issue_has_label?(repo, pr_number, 'please review')
   add_labels_to_issue!(repo, pr_number, ['please review'])
 end
 
+# create wip label
+unless repo_has_label?(repo, 'wip')
+  add_label_to_repo!(repo, 'wip', '1d76db')
+end
+# add/remove wip
+if github.pr_title.include? 'WIP'
+  add_labels_to_issue!(repo, pr_number, ['wip'])
+else
+  remove_label_from_issue!(repo, pr_number, 'wip')
+end
+
 # WARNINGS
-# make it more obvious that a PR is a work in progress and shouldn't be merged yet
-warn('PR is classed as Work in Progress', sticky: false) if github.pr_title.include? 'WIP'
 # warn when there is a big PR :metal:
 warn('Big PR', sticky: false) if git.lines_of_code > 666
 # warn when there is no tracker story tagged for this PR
