@@ -56,7 +56,7 @@ end
 # add/remove wip
 if github.pr_title.include? 'WIP'
   add_labels_to_issue!(repo, pr_number, ['wip'])
-else
+elsif issue_has_label?(repo, pr_number, 'wip')
   remove_label_from_issue!(repo, pr_number, 'wip')
 end
 
