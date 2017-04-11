@@ -25,10 +25,18 @@ def remove_label_from_issue!(repo, pr_number, label)
 end
 
 # LABELS
-# create tiny
-unless repo_has_label?(repo, 'tiny')
-  add_label_to_repo!(repo, 'tiny', 'f7c6c7')
+labels = [
+  {name: 'tiny', color: 'f7c6c7'},
+  {name: 'please review', color: 'fbca04'},
+  {name: 'reviewed', color: '0e8a16'},
+  {name: 'wip', color: '1d76db'},
+]
+labels.each do |lbl|
+  unless repo_has_label?(repo, lbl[:name])
+    add_label_to_repo!(repo, lbl[:name], lbl[:color])
+  end
 end
+
 # add/remove tiny
 issue_has_tiny_label = issue_has_label?(repo, pr_number, 'tiny')
 if git.lines_of_code < 50 && !issue_has_tiny_label
@@ -37,22 +45,11 @@ elsif git.lines_of_code > 50 && issue_has_tiny_label
   remove_label_from_issue!(repo, pr_number, 'tiny')
 end
 
-# create reviewed/please review
-unless repo_has_label?(repo, 'please review')
-  add_label_to_repo!(repo, 'please review', 'fbca04')
-end
-unless repo_has_label?(repo, 'reviewed')
-  add_label_to_repo!(repo, 'reviewed', '0e8a16')
-end
 # add/remove please review
 if !issue_has_label?(repo, pr_number, 'reviewed') && !issue_has_label?(repo, pr_number, 'please review')
   add_labels_to_issue!(repo, pr_number, ['please review'])
 end
 
-# create wip label
-unless repo_has_label?(repo, 'wip')
-  add_label_to_repo!(repo, 'wip', '1d76db')
-end
 # add/remove wip
 if github.pr_title.include? 'WIP'
   add_labels_to_issue!(repo, pr_number, ['wip'])
