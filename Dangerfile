@@ -30,6 +30,7 @@ labels = [
   {name: 'please review', color: 'fbca04'},
   {name: 'reviewed', color: '0e8a16'},
   {name: 'wip', color: '1d76db'},
+  {name: 'release', color: '336694'},
 ]
 labels.each do |lbl|
   unless repo_has_label?(repo, lbl[:name])
@@ -37,17 +38,27 @@ labels.each do |lbl|
   end
 end
 
-# add/remove tiny
-issue_has_tiny_label = issue_has_label?(repo, pr_number, 'tiny')
-if git.lines_of_code < 50 && !issue_has_tiny_label
-  add_labels_to_issue!(repo, pr_number, ['tiny'])
-elsif git.lines_of_code > 50 && issue_has_tiny_label
-  remove_label_from_issue!(repo, pr_number, 'tiny')
-end
+if github.pr_title.downcase.start_with? 'release'
+  # add/remove release label
+  is_release = true
+  if !issue_has_label?(repo, pr_number, 'release')
+    add_labels_to_issue!(repo, pr_number, ['release'])
+  end
+else
+  is_release = false
 
-# add/remove please review
-if !issue_has_label?(repo, pr_number, 'reviewed') && !issue_has_label?(repo, pr_number, 'please review')
-  add_labels_to_issue!(repo, pr_number, ['please review'])
+  # add/remove tiny
+  issue_has_tiny_label = issue_has_label?(repo, pr_number, 'tiny')
+  if git.lines_of_code < 50 && !issue_has_tiny_label
+    add_labels_to_issue!(repo, pr_number, ['tiny'])
+  elsif git.lines_of_code > 50 && issue_has_tiny_label
+    remove_label_from_issue!(repo, pr_number, 'tiny')
+  end
+
+  # add/remove please review
+  if !issue_has_label?(repo, pr_number, 'reviewed') && !issue_has_label?(repo, pr_number, 'please review')
+    add_labels_to_issue!(repo, pr_number, ['please review'])
+  end
 end
 
 # add/remove wip
@@ -59,7 +70,7 @@ end
 
 # WARNINGS
 # warn when there is a big PR :metal:
-warn('Big PR', sticky: false) if git.lines_of_code > 666
+warn('Big PR', sticky: false) if git.lines_of_code > 666 && !is_release
 # warn when there is no tracker story tagged for this PR
 warn('Please provide a linked tracker story for this PR in the description', sticky: false) unless github.pr_body.match(/(https?:\/\/)?(w{3}\.)?pivotaltracker\.com\/story\/show\/\d*/)
 
